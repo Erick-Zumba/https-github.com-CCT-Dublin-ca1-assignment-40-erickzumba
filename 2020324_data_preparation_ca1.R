@@ -2,5 +2,9 @@
 getwd()
 #setting the working directory and using the download folder
 setwd("C:/Users/Erick/Downloads")
-#unzip the data that we will work with
-unzip("all_merged.zip", exdir="data")
+
+#load necessary libraries
+library(dplyr)
+library(tidyr)
+dataset <- read.csv("Electric_Vehicle_Population_Data.csv")
+head(dataset)
