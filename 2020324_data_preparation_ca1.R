@@ -29,3 +29,19 @@ ggplot(dataset, aes(x = Electric.Range, y = Base.MSRP)) +
   labs(title = "Scatterplot: Electric Range vs Base MSRP",
        x = "Electric Range (miles)",
        y = "Base MSRP ($)")
+
+# Boxplot
+ggplot(dataset, aes(x = Electric.Vehicle.Type, y = Electric.Range)) +
+  geom_boxplot(fill = "lightblue") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Electric Range by Vehicle Type", x = "Vehicle Type", y = "Electric Range (miles)")
+
+# Bar plot for Electric Vehicle Type
+ggplot(dataset, aes(x = Electric.Vehicle.Type)) +
+  geom_bar(fill = "skyblue") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Frequency of Electric Vehicle Types", x = "Vehicle Type", y = "Count")
+
+
