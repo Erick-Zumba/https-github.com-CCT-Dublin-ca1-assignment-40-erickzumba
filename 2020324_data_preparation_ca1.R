@@ -8,6 +8,7 @@ setwd("C:/Users/Erick/Downloads")
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(reshape2)  
 
 #reading the data set from the csv file
 dataset <- read.csv("Electric_Vehicle_Population_Data.csv")
@@ -72,7 +73,43 @@ ggplot(dataset_clean, aes(x = Base.MSRP, y = Electric.Range, color = Electric.Ve
   labs(title = "Base MSRP vs Electric Range", x = "Base MSRP", y = "Electric Range")
 
 
+# Load the dataset for pca 
 
+electric_vehicle <- read.csv("Electric_Vehicle_Population_Data.csv", header = TRUE, sep = ",", na.strings = "NA", stringsAsFactors = FALSE)
 
+# Select numeric columns for PCA
+numeric_columns <- c("Electric.Range", "Base.MSRP", "Legislative.District", "X2020.Census.Tract")
+pca_data <- electric_vehicle[, numeric_columns]
+head(pca_data)
+# Handle missing values (e.g., remove rows with NA)
+pca_data <- na.omit(pca_data)
 
+# Standardize the data
+pca_data_scaled <- scale(pca_data)
+
+# Perform PCA
+pca_result <- prcomp(pca_data_scaled, center = TRUE, scale. = TRUE)
+
+# View summary of PCA
+summary(pca_result)
+
+# Perform PCA (from previous step)
+pca_result <- prcomp(pca_data_scaled, center = TRUE, scale. = TRUE)
+
+# Extract explained variance
+explained_variance <- pca_result$sdev^2 / sum(pca_result$sdev^2)
+#paste0 concataneted two vectors after converting to a string
+explained_variance_df <- data.frame(Principal_Component = paste0("PC", 1:length(explained_variance)), Variance_Explained = explained_variance)
+
+# Scree plot using ggplot2
+ggplot(explained_variance_df, aes(x = Principal_Component, y = Variance_Explained)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  geom_line(aes(group = 1), color = "red") +
+  geom_point(color = "red", size = 2) +
+  labs(
+    title = "Scree Plot: Explained Variance",
+    x = "Principal Components",
+    y = "Proportion of Variance Explained"
+  ) +
+  theme_minimal()
 
