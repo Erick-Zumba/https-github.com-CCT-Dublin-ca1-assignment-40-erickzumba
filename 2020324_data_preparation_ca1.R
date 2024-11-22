@@ -1,5 +1,6 @@
 #getting the work directory
 getwd()
+
 #setting the working directory and using the download folder
 setwd("C:/Users/Erick/Downloads")
 
@@ -7,17 +8,30 @@ setwd("C:/Users/Erick/Downloads")
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+
 #reading the data set from the csv file
 dataset <- read.csv("Electric_Vehicle_Population_Data.csv")
 head(dataset)
+
 #summarizing the dataset
 summary(dataset)
+
 
 # Replace NA with mean in numerical columns
 dataset_clean <- dataset %>%  mutate(across(where(is.numeric), ~ ifelse(is.na(.), mean(., na.rm = TRUE), .)))
 
 # Check if there are still missing values
 sum(is.na(dataset_clean))
+
+
+
+# Handle outliers in Electric Range using IQR
+Q1 <- quantile(dataset_clean$Electric.Range, 0.25)
+Q3 <- quantile(dataset_clean$Electric.Range, 0.75)
+IQR <- Q3 - Q1
+dataset_clean <- dataset_clean %>%
+  filter(Electric.Range >= (Q1 - 1.5 * IQR) & Electric.Range <= (Q3 + 1.5 * IQR))
+
 
 # View cleaned dataset
 head(dataset_clean)
@@ -32,7 +46,7 @@ ggplot(dataset, aes(x = Electric.Range, y = Base.MSRP)) +
 
 # Boxplot
 ggplot(dataset, aes(x = Electric.Vehicle.Type, y = Electric.Range)) +
-  geom_boxplot(fill = "lightblue") +
+  geom_boxplot(fill ="red") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(title = "Electric Range by Vehicle Type", x = "Vehicle Type", y = "Electric Range (miles)")
@@ -43,5 +57,22 @@ ggplot(dataset, aes(x = Electric.Vehicle.Type)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(title = "Frequency of Electric Vehicle Types", x = "Vehicle Type", y = "Count")
+
+
+# Bar plot for vehicle types
+ggplot(dataset_clean, aes(x = Electric.Vehicle.Type)) +
+  geom_bar(fill = "skyblue") +
+  theme_minimal() +
+  labs(title = "Frequency of Electric Vehicle Types", x = "Vehicle Type", y = "Count")
+
+# Scatter plot for Base MSRP vs Electric Range
+ggplot(dataset_clean, aes(x = Base.MSRP, y = Electric.Range, color = Electric.Vehicle.Type)) +
+  geom_point(alpha = 0.6) +
+  theme_minimal() +
+  labs(title = "Base MSRP vs Electric Range", x = "Base MSRP", y = "Electric Range")
+
+
+
+
 
 
