@@ -14,16 +14,12 @@ library(reshape2)
 dataset <- read.csv("Electric_Vehicle_Population_Data.csv")
 head(dataset)
 
-#summarizing the dataset
-summary(dataset)
-
 
 # Replace NA with mean in numerical columns
 dataset_clean <- dataset %>%  mutate(across(where(is.numeric), ~ ifelse(is.na(.), mean(., na.rm = TRUE), .)))
 
 # Check if there are still missing values
 sum(is.na(dataset_clean))
-
 
 
 # Handle outliers in Electric Range using IQR
@@ -36,14 +32,9 @@ dataset_clean <- dataset_clean %>%
 
 # View cleaned dataset
 head(dataset_clean)
+#summarizing the dataset
+summary(dataset_clean)
 
-# Scatterplot to identify relationships and potential outliers between Electric.Range and Base.MSRP
-ggplot(dataset, aes(x = Electric.Range, y = Base.MSRP)) +
-  geom_point(color = "blue", alpha = 0.6) +
-  theme_minimal() +
-  labs(title = "Scatterplot: Electric Range vs Base MSRP",
-       x = "Electric Range (miles)",
-       y = "Base MSRP ($)")
 
 # Boxplot
 ggplot(dataset, aes(x = Electric.Vehicle.Type, y = Electric.Range)) +
@@ -52,21 +43,14 @@ ggplot(dataset, aes(x = Electric.Vehicle.Type, y = Electric.Range)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(title = "Electric Range by Vehicle Type", x = "Vehicle Type", y = "Electric Range (miles)")
 
-# Bar plot for Electric Vehicle Type
-ggplot(dataset, aes(x = Electric.Vehicle.Type)) +
-  geom_bar(fill = "skyblue") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(title = "Frequency of Electric Vehicle Types", x = "Vehicle Type", y = "Count")
 
-
-# Bar plot for vehicle types
+# Bar plot for vehicle types after the data was clean
 ggplot(dataset_clean, aes(x = Electric.Vehicle.Type)) +
-  geom_bar(fill = "skyblue") +
+  geom_bar(fill = "green") +
   theme_minimal() +
   labs(title = "Frequency of Electric Vehicle Types", x = "Vehicle Type", y = "Count")
 
-# Scatter plot for Base MSRP vs Electric Range
+# Scatterplot to identify relationships and potential outliers between Electric.Range and Base.MSRP
 ggplot(dataset_clean, aes(x = Base.MSRP, y = Electric.Range, color = Electric.Vehicle.Type)) +
   geom_point(alpha = 0.6) +
   theme_minimal() +
@@ -93,13 +77,15 @@ pca_result <- prcomp(pca_data_scaled, center = TRUE, scale. = TRUE)
 # View summary of PCA
 summary(pca_result)
 
-# Perform PCA (from previous step)
-pca_result <- prcomp(pca_data_scaled, center = TRUE, scale. = TRUE)
 
 # Extract explained variance
 explained_variance <- pca_result$sdev^2 / sum(pca_result$sdev^2)
-#paste0 concataneted two vectors after converting to a string
+
+#paste0 concatenated two vectors after converting to a string
 explained_variance_df <- data.frame(Principal_Component = paste0("PC", 1:length(explained_variance)), Variance_Explained = explained_variance)
+
+#summary of explained variance
+summary(explained_variance_df)
 
 # Scree plot using ggplot2
 ggplot(explained_variance_df, aes(x = Principal_Component, y = Variance_Explained)) +
@@ -112,4 +98,6 @@ ggplot(explained_variance_df, aes(x = Principal_Component, y = Variance_Explaine
     y = "Proportion of Variance Explained"
   ) +
   theme_minimal()
+
+
 
